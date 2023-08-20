@@ -1,0 +1,54 @@
+# GNU Makefile for compiling x86-Windows websocket.exe using MinGW / MinGW-w64.
+# Usage: "make -f Makefile.w32"
+# "make DEBUG=1" to build a debug client.
+# "make WINSOCK2=1" to use WinSock2 api instead of the old WinSock 1.1.
+
+# ---------------------------
+# build variables
+# ---------------------------
+
+CC = gcc
+LINKER = $(CC)
+
+ifeq ($(WINSOCK2),1)
+LIBWINSOCK = -lws2_32
+else
+LIBWINSOCK = -lwsock32
+endif
+
+NET_LIBS   = $(LIBWINSOCK)
+LIBS = $(NET_LIBS)
+
+# ---------------------------
+# objects
+# ---------------------------
+
+OBJS = include\wsclient\base64.o \
+	include\wsclient\sha1.o \
+	include\wsclient\wsclient.o \
+	websocket.o \
+	$(SYSOBJ_SYS) $(SYSOBJ_MAIN)
+
+# ---------------------------
+# targets / rules
+# ---------------------------
+
+.PHONY:	clean debug release
+
+DEFAULT_TARGET = websocket.exe
+all: $(DEFAULT_TARGET)
+
+%.o:	%.c
+	$(CC) -o $@ -c $<
+
+websocket.exe: $(OBJS) $(SYSOBJ_RES)
+	$(LINKER) $(OBJS) $(SYSOBJ_RES) $(LIBS) -o $@
+
+release:	websocket.exe
+debug:
+	$(error Use "make DEBUG=1")
+
+clean:
+	$(RM) *.o *.d *.res $(DEFAULT_TARGET)
+
+sinclude $(OBJS:.o=.d)

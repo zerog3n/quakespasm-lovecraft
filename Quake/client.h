@@ -61,9 +61,9 @@ typedef struct
 // client_state_t should hold all pieces of the client state
 //
 
-#define	SIGNONS		4			// signon messages to receive before connected
+#define	SIGNONS			4		// signon messages to receive before connected
 
-#define	MAX_DLIGHTS		64 //johnfitz -- was 32
+#define	MAX_DLIGHTS		32 		// jimhaworth -- was 64 (johnfitz -- was 32)
 typedef struct
 {
 	vec3_t	origin;
@@ -76,7 +76,7 @@ typedef struct
 } dlight_t;
 
 
-#define	MAX_BEAMS	64 // jimhaworth -- was 32 (johnfitz -- was 24)
+#define	MAX_BEAMS		64		// jimhaworth -- was 32 (johnfitz -- was 24)
 typedef struct
 {
 	int		entity;
@@ -293,7 +293,7 @@ extern	int				cl_max_edicts; //johnfitz -- only changes when new map loads
 dlight_t *CL_AllocDlight (int key);
 dlight_t *CL_DelayedLightEmitter (vec3_t pos, int rad, float r, float g, float b);
 dlight_t *CL_LightEmitter (vec3_t pos, int rad, float r, float g, float b, float t);
-void	CL_DecayLights (void);
+void	  CL_DecayLights (void);
 
 void CL_Init (void);
 

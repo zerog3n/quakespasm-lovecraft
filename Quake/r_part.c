@@ -678,10 +678,11 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case 5:	// tracer
 				p->die = cl.time + 0.5;
 				p->type = pt_static;
-				if (type == 3)
-					p->color = 52 + ((tracercount&4)<<1);
-				else
-					p->color = 230 + ((tracercount&4)<<1);
+				if (type == 3) {
+					p->color = 52 + ((tracercount&4)<<1); // green
+				} else {
+					p->color = 230 + ((tracercount&4)<<1); // orange
+				}
 
 				tracercount++;
 

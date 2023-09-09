@@ -345,8 +345,10 @@ void CL_DecayLights (void)
 			continue;
 
 		dl->radius -= time*dl->decay;
-		if (dl->radius < 0)
+		if (dl->radius < 0) {
 			dl->radius = 0;
+			dl->color[0] = dl->color[1] = dl->color[2] = 1;
+		}
 	}
 }
 
@@ -585,10 +587,14 @@ void CL_RelinkEntities (void)
 			R_RocketTrail (oldorg, ent->origin, 2);
 		else if (ent->model->flags & EF_ZOMGIB)
 			R_RocketTrail (oldorg, ent->origin, 4);
-		else if (ent->model->flags & EF_TRACER)
+		else if (ent->model->flags & EF_TRACER) {
 			R_RocketTrail (oldorg, ent->origin, 3);
-		else if (ent->model->flags & EF_TRACER2)
+			dl = CL_LightEmitter (ent->origin, 80, 0.48f, 0.70f, 0.03f, 0.2); // slime/green
+		}
+		else if (ent->model->flags & EF_TRACER2) {
 			R_RocketTrail (oldorg, ent->origin, 5);
+			dl = CL_LightEmitter (ent->origin, 80, 0.98f, 0.64f, 0.01f, 0.1); // fire/orange
+		}
 		else if (ent->model->flags & EF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, 0);
@@ -614,8 +620,10 @@ void CL_RelinkEntities (void)
 			dl->color[1] = 0.10f;
 			dl->color[2] = 0.10f;
 		}
-		else if (ent->model->flags & EF_TRACER3)
+		else if (ent->model->flags & EF_TRACER3) {
 			R_RocketTrail (oldorg, ent->origin, 6);
+			dl = CL_LightEmitter (ent->origin, 80, 0.54f, 0.33f, 0.83f, 0.1); // pink/purple
+		}
 
 		ent->forcelink = false;
 

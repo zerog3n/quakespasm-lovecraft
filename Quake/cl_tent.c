@@ -64,6 +64,8 @@ dlight_t *CL_DelayedLightEmitter (vec3_t pos, int rad, float r, float g, float b
 	dl = CL_AllocDlight (0);
 	VectorCopy (pos, dl->origin);
 	dl->radius = rad;
+	dl->decay = 0;
+	dl->die = 9999999999999999;
 	
 	// update the color
 	dl->color[0] = r;
@@ -342,18 +344,21 @@ void CL_UpdateTEnts (void)
 	int			i, j; //johnfitz -- use j instead of using i twice, so we don't corrupt memory
 	beam_t		*b;
 	vec3_t		dist, org, lorg;
+	dlight_t 	*dl;
+	dlight_t 	*dlx, *dly, *dlz;
 	float		d;
 	entity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
-	int			radius = 120; // lightning beam  -- light entity radius
+	int			radius = 150; // lightning beam  -- light entity radius
 	int			r;
+	//int		maxlights = 8;
 
 	num_temp_entities = 0;
 
 	srand ((int) (cl.time * 1000)); //johnfitz -- freeze beams when paused
 
-// update lightning
+	// update lightning
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.time)
@@ -388,6 +393,8 @@ void CL_UpdateTEnts (void)
 				pitch += 360;
 		}
 
+		r = radius;
+
 	// add new entities for the lightning
 		VectorCopy (b->start, org);
 		d = VectorNormalize(dist);
@@ -402,12 +409,14 @@ void CL_UpdateTEnts (void)
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand()%360;
 
-			r = radius;
 			if (org == b->start) r = radius / 2;
 			if (org == b->end) r = radius / 2;
 
 			// jimhaworth -- add lights to the beam
-			CL_LightEmitter(org, r, 0.0f, 0.3f, 1.0f, 0.1);
+			if (i%160 == 0) {
+				dl = CL_LightEmitter(org, r, 0.0f, 0.3f, 1.0f, 0.1);
+				dl->decay = 300;
+			}
 
 			// jimhaworth -- remember the last vector
 			lorg[0] = org[0];
@@ -420,7 +429,14 @@ void CL_UpdateTEnts (void)
 			d -= 30;
 		}
 
-		// jimhaworth -- add a small white light at the end of the beam
-		CL_LightEmitter(lorg, radius / 2, 1.0f, 1.0f, 1.0f, 0.1);
+		// jimhaworth -- add 2 small white lights at the end of the beam
+		if (i%160 == 0) {
+			dlx = CL_LightEmitter(lorg, r / 2, 1.0f, 1.0f, 1.0f, 0.15); // white
+			dly = CL_LightEmitter(org,  r / 2, 1.0f, 1.0f, 1.0f, 0.15); // white
+			dlz = CL_LightEmitter(lorg, r / 1, 0.0f, 0.3f, 1.0f, 0.15); // blue
+			dlx->decay = 300;
+			dly->decay = 300;
+			dlz->decay = 300;
+		}
 	}
 }

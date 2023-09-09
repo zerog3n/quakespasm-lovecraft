@@ -90,6 +90,9 @@ void R_RenderDlight (dlight_t *light)
 	vec3_t	v;
 	float	rad;
 
+	// do not render dead lights
+	if (light->die < cl.time || !light->radius) return;
+
 	rad = light->radius * 0.35;
 
 	VectorSubtract (light->origin, r_origin, v);
@@ -243,7 +246,7 @@ void R_PushDlights (void)
 		return;
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+											// advanced yet for this frame
 	l = cl_dlights;
 
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)

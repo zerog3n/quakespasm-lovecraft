@@ -818,6 +818,8 @@ void V_CalcRefdef (void)
 			view->origin[2] += 1;
 		else if (scr_viewsize.value == 80)
 			view->origin[2] += 0.5;
+
+		view->origin[0] = -4;
 	}
 
 	if (ent->lerpflags & LERP_FINISH)
